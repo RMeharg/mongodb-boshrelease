@@ -38,19 +38,19 @@ instance_groups:
     release: mongodb-service
     properties: 
       mongodb-server:
-        morDbUserAdminPwd: ((mongo_admin_password))
-        morDbRootAdminPwd: ((mongo_root_password))
+        morDbUserAdminPwd: ((admin_password))
+        morDbRootAdminPwd: ((root_password))
         morDbCertificate: 
-          ca: ((mongo_certificate.ca))
-          private_key: ((mongo_certificate.private_key))
-          certificate: ((mongo_certificate.certificate))
+          ca: ((mongo-certificate.ca))
+          private_key: ((mongo-certificate.private_key))
+          certificate: ((mongo-certificate.certificate))
         
 variables:
-- name: mongo_admin_password
+- name: admin_password
   type: password
-- name: mongo_root_password
+- name: root_password
   type: password
-- name: mongo_certificate
+- name: mongo-certificate
   type: certificate
   options:
     is_ca: true
