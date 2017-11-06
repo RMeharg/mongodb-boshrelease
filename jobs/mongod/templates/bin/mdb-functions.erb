@@ -284,3 +284,30 @@ add_secondary()
   done
 }
 ################################################################################################
+
+########################## Remove a secondary node from replicaset #############################
+remove_secondary()
+{
+    # do not perform on bootstrap node (spec.id=0)
+    if [ <%= spec.id %> -ne O ]
+    then  
+        Master=$( check_master )
+        if [ "$Master" == "<%= mongo_current_ip %>:<%= mongo_DbTypeport %>" ]
+        then
+          exit 1
+        fi  
+        export MONGO_CMD_PARAM="--quiet -u <%= p("root_username") %> -p <%= p("root_password") %> --authenticationDatabase admin"
+        
+        # check if node to remove is a part of the cluster
+        query= 'rs.status().members.forEach(function(getname){if(getname.name=="<%= mongo_current_ip %>:<%= mongo_DbTypeport %>"){print("true");}})'
+        exists=$(${MONGO_CMD} --host $Master \
+          ${MONGO_CMD_PARAM} --eval ${query})
+            
+        if [ "$exists" == "true" ]
+        then
+          ${MONGO_CMD} --host $Master \
+            ${MONGO_CMD_PARAM} --eval 'rs.remove("<%= mongo_current_ip %>:<%= mongo_DbTypeport %>")'
+        fi
+    fi  
+}
+################################################################################################
